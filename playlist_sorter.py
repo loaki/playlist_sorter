@@ -151,7 +151,7 @@ def get_bpm(filename, window):
 def sort(files_in_dir, files_bpm):
     list_len = len(files_in_dir)
     for rank in range(0, list_len):
-        low_bpm = 0
+        low_bpm = files_bpm[0]
         position = 0
         i = 0
         for item in files_in_dir:
@@ -166,20 +166,22 @@ def sort(files_in_dir, files_bpm):
         files_in_dir.remove(files_in_dir[position])
     print(list_len,'files sorted')
 
-def conv_wav(location):
+def conv_wav(location, files_conv):
     for r, d, f in os.walk(location):
         for item in f:
             if '.mp3' in item:
                 #print('input/'+item,'input/'+item.replace('.mp3', '.wav'))
                 sound = AudioSegment.from_mp3('input/'+item)
                 sound.export('input/'+item.replace('.mp3', '.wav'), format="wav")
+                files_conv.append(item.replace('.mp3', '.wav'))
 
 if __name__ == "__main__":
     location = os.getcwd()+'\\input'
     files_in_dir = []
     files_bpm = []
+    files_conv = []
     #print(location)
-    conv_wav(location)
+    conv_wav(location, files_conv)
     # r=>root, d=>directories, f=>files
     for r, d, f in os.walk(location):
         for item in f:
@@ -187,8 +189,10 @@ if __name__ == "__main__":
                 files_in_dir.append(item)
     i = 0
     for item in files_in_dir:
-        bpm = get_bpm('input/'+item, 8)
+        bpm = get_bpm('input/'+item, 5)
         files_bpm.append(bpm)
         print(item, ' : ',int(bpm),'bpm')
         i += 1
     sort(files_in_dir, files_bpm)
+    for item in files_conv:
+        os.remove('input/'+item)
